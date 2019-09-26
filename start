@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+docker-compose build
+
+summon -p keyring.py \
+  docker-compose up -d

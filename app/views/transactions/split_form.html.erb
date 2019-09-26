@@ -1,0 +1,18 @@
+<h1>Split Transaction</h1>
+
+<div>Original Amount: <%=@transaction.amount%></div>
+
+<%= form_for(:split) do |f| %>
+     <%=button_tag "Add split transaction", :type =>  "button", :id => "addTransaction",
+                    :onclick => 'addTransactionField()'%> 
+    <br />
+    <div id="transactionHeader" style="display:none"> 
+       Transactions: 
+    </div>
+    <br />
+    <ul id="myList">
+    </ul>
+  <div class="actions">
+    <%= f.submit "Create Split" %>
+  </div>
+<% end %>

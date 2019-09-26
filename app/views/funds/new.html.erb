@@ -1,0 +1,18 @@
+<h1>New Fund</h1>
+
+
+<%= form_with scope: :fund, url: funds_path, local: true do |form| %>
+  <p>
+    <%= form.label :name %><br>
+    <%= form.text_field :name %>
+  </p>
+ 
+  <p>
+    <%= form.label :account %><br>
+    <%= form.select :account_id, Account.all.collect { |a| [ "#{a.connection.name} - #{a.name}", a.id ] }.sort_by {|i| i[0] }, include_blank: true %>
+  </p>
+ 
+  <p>
+    <%= form.submit %>
+  </p>
+<% end %>

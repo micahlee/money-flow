@@ -1,0 +1,21 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+  web:
+    build: .
+    volumes:
+      - .:/myapp
+    ports:
+      - "3002:3000"
+    environment:
+      PLAID_CLIENT_ID:
+      PLAID_SECRET:
+      PLAID_PUBLIC_KEY:
+      PLAID_ENV: 'development'
+      PLAID_PRODUCTS: 'transactions'
+      PLAID_COUNTRY_CODES: 'US,CA,GB,FR,ES'
+    depends_on:
+      - db

@@ -1,0 +1,12 @@
+<h1>Funds</h1>
+
+<%= link_to "New Fund", new_fund_path %> |
+<%= link_to 'Dashboard', root_path %>
+
+<ul>
+  <% @funds.each do |fund| %>
+    <li>
+      <%=link_to fund.name, fund_path(fund) %> ( <%=number_to_currency(fund.pending_amount)%> pending)
+    </li>
+  <% end %>
+</ul>

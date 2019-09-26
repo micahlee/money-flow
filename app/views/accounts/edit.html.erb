@@ -1,0 +1,36 @@
+<h1>Edit Account</h1>
+
+<%= link_to 'Back', connection_path(@connection) %>
+
+<%= form_with(model: @account, local: true, url: connection_account_url(@connection, @account)) do |form| %>
+ 
+  <% if @account.errors.any? %>
+    <div id="error_explanation">
+      <h2>
+        <%= pluralize(@account.errors.count, "error") %> prohibited
+        this account from being saved:
+      </h2>
+      <ul>
+        <% @account.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%=@connection.name%><br/>
+    <%=@account.name%>
+  </div>
+ 
+  <div class="form-check">
+      <%= form.check_box :hidden_from_snapshot, class: 'form-check-input' %>
+      <%= form.label 'Hide from Snapshot', class: 'form-check-label' %>
+  </div>
+ 
+  <p>
+    <%= form.submit class: 'btn btn-primary' %>
+  </p>
+ 
+<% end %>
+ 

@@ -1,0 +1,29 @@
+<h1><%=@account.name%></h1>
+
+<%= link_to 'Sync Transactions', sync_transactions_connection_account_path(@connection, @account),
+              method: :post,
+              data: { confirm: 'Are you sure?' } %> |
+
+<%= link_to 'Edit', edit_connection_account_path(@connection, @account) %> |
+<%= link_to 'Dashboard', root_path %>
+
+
+
+<table class="table">
+<thead>
+<tr>
+<th>Name</th>
+<th>Date</th>
+<th>Ammount</th>
+</tr>
+</thead>
+<tbody>
+  <% @account.transactions.each do |t| %>
+    <tr>
+      <td><%=t.name%></td>
+      <td><%=t.date%></td>
+      <td><%=number_to_currency(t.amount * -1)%></td>
+    </tr>
+  <% end %>
+</tbody>
+</table>

@@ -1,0 +1,55 @@
+<h1>Edit Connection</h1>
+
+<%= form_with scope: :connection, url: connections_path, local: true do |form| %>
+  <div class="form-group">
+    <label>Name</label>
+    <%= form.text_field :name, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <button id="link-btn" class="btn btn-default" type="button">Update Link</button>
+  </div>
+ 
+  <div class="form-group">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>
+
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+<script>
+(function($) {
+  var products = '<%= ENV["PLAID_PRODUCTS"] || "transactions" %>'.split(',');
+  if (products.includes('assets')) {
+    $('#assets').show();
+  }
+  var handler = Plaid.create({
+    apiVersion: 'v2',
+    clientName: 'Plaid Quickstart',
+    env: '<%= ENV["PLAID_ENV"] %>',
+    product: products,
+    key: '<%= ENV["PLAID_PUBLIC_KEY"] %>',
+    countryCodes: '<%= ENV["PLAID_COUNTRY_CODES"] || "US,CA,GB,FR,ES" %>'.split(','),
+    token: '<%=@public_token%>',
+    // webhook: 'https://your-domain.tld/plaid-webhook',
+    onSuccess: function(public_token) {
+      $.ajax({
+        url: '/connections/access_token',
+        type: 'post',
+        data: {
+          public_token: public_token
+        },
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(data) {
+
+        }
+      });
+    },
+  });
+
+  $('#link-btn').on('click', function(e) {
+    handler.open();
+  });
+})(jQuery);
+</script>

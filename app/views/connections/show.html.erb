@@ -1,0 +1,36 @@
+<h1>Connection</h1>
+
+<%= link_to 'Sync Accounts', sync_accounts_connection_path(@connection),
+              method: :post,
+              data: { confirm: 'Are you sure?' } %> |
+<%= link_to 'Edit', edit_connection_path(@connection) %> |
+<%= link_to 'Dashboard', root_path %>
+
+
+<h2>Accounts</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Balance</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @connection.accounts.each do |account| %>
+      <tr>
+        <td>
+          <%= link_to account.name, connection_account_path(@connection, account) %><br />
+          <i><%=account.official_name%></i>
+        </td>
+        <td>
+          <%=account.balance_available%>
+        </td>
+        <td>
+          <%=account.account_type%><br />
+          <i><%=account.account_subtype%></i>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

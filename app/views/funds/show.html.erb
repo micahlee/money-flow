@@ -1,0 +1,60 @@
+<h1><%=@fund.name%></h1>
+<div>
+  <%=@fund.account.connection.name%> - <%=@fund.account.name%>
+</div>
+
+<div>
+<%= link_to 'Funds', funds_path %> | 
+<%= link_to 'Dashboard', root_path %>
+</div>
+
+<h2>Transaction Inbox</h2>
+<%= link_to "Download", fund_path(@fund, format: 'csv') %>
+<table class="table">
+<thead>
+<tr>
+<th></th>
+<th>Date</th>
+<th>Account</th>
+<th>Name</th>
+<th>Amount</th>
+</tr>
+</thead>
+<tbody>
+  <% @transactions.each do |t| %>
+    <tr>
+    <td>
+        <button 
+          type="button" 
+          class="btn btn-light" 
+          onclick="clearTransaction(this, <%=t.account.connection.id%>, <%=t.account.id%>, <%=t.id%>)">
+          Clear
+        </button>
+      </td>
+
+      <td><%=t.date%></td>
+      
+      <td>
+        <%=t.account.name%><br />
+        <%=t.account.connection.name%>
+        </td>
+            <td><%=t.name%></td>
+<td>
+        <%=number_to_currency(t.amount)%><br/>
+        <%= 'pending' if t.pending %>
+      </td>
+      
+    </tr>
+  <% end %>
+  <tr>
+    <td colspan="3"></td>
+    <td>TOTAL:</td>
+    <td><%=number_to_currency(@transactions.collect(&:amount).sum)%></td>
+  </tr>
+  <tr>
+    <td colspan="3"></td>
+    <td>Available:</td>
+    <td><%=number_to_currency(@fund.account.balance_current)%></td>
+  </tr>
+</tbody>
+</table>

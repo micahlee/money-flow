@@ -1,0 +1,24 @@
+<h1>Money Mover</h1>
+
+<%= link_to "First of Month", money_mover_path(cycle: 1) %> |
+<%= link_to "Mid-Month", money_mover_path(cycle: 16) %> |
+<%= link_to 'Dashboard', root_path %>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>From</th>
+      <th>To</th>
+      <th>Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @totals.each do |total| %>
+    <tr>
+      <td><%=total.from%></td>
+      <td><%=total.to%></td>
+      <td><%=number_to_currency(total.amount / 100)%></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
