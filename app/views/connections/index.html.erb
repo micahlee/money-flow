@@ -16,6 +16,10 @@
   <% @connections.each do |connection| %>
     <tr>
       <td>
+        <% unless connection.connection_ok? %>
+            <span class="oi oi-warning text-danger" title="person" aria-hidden="true"></span>
+          <% end %>
+
       <a href="<%=connection_path(connection)%>">
         <%=connection.name%>
         </a>
