@@ -46,10 +46,13 @@ class AccountsController < ApplicationController
       transactions_handled += transactions.length
       handle_transaction_page(account, transactions)
     end
+
+    account.last_synced_at = DateTime.now
+    account.save
   rescue => err
-    p connection.name
-    p account.name
-    p err
+    account.last_sync_error_at = DateTime.now
+    account.last_sync_error = err
+    account.save
   end
 
   def self.handle_transaction_page(account, transactions)
