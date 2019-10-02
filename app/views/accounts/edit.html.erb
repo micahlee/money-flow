@@ -27,6 +27,11 @@
       <%= form.check_box :hidden_from_snapshot, class: 'form-check-input' %>
       <%= form.label 'Hide from Snapshot', class: 'form-check-label' %>
   </div>
+
+  <div class="form-check">
+      <%= form.check_box :exclude_from_available, class: 'form-check-input' %>
+      <%= form.label 'Exclude from Available Balance', class: 'form-check-label' %>
+  </div>
  
   <p>
     <%= form.submit class: 'btn btn-primary' %>
