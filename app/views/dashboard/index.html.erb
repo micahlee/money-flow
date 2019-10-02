@@ -74,10 +74,10 @@
       <td>
         <strong>Total:</strong>
       </td>
-      <td style="font-weight: bold;"><%=number_to_currency(@accounts.map(&:cash_amount).compact.sum)%></td>
-      <td style="font-weight: bold;"><%=number_to_currency(@accounts.map(&:credit_amount).compact.sum)%></td>
-      <td style="font-weight: bold;"><%=number_to_currency(@accounts.map(&:uncleared_amount).compact.sum)%></td>
-      <td style="font-weight: bold;"><%=number_to_currency(@accounts.map(&:available_amount).compact.sum)%></td>
+      <td style="font-weight: bold;"><%=number_to_currency(@cash_total)%></td>
+      <td style="font-weight: bold;"><%=number_to_currency(@credit_total)%></td>
+      <td style="font-weight: bold;"><%=number_to_currency(@uncleared_total)%></td>
+      <td style="font-weight: bold;"><%=number_to_currency(@available_total)%></td>
 
     </tr>
     <% @accounts.each do |a| %>
@@ -93,7 +93,7 @@
         <td><%=number_to_currency(a.cash_amount)%></td>
         <td><%=number_to_currency(a.credit_amount)%></td>
         <td><%=number_to_currency(a.uncleared_amount) if a.uncleared_amount%></td>
-        <td><%=number_to_currency(a.available_amount) if a.available_amount%></td>
+        <td <% if a.exclude_from_available%>class="text-muted"<% end %>><%=number_to_currency(a.available_amount) if a.available_amount%></td>
 
       </tr>
     <% end %>

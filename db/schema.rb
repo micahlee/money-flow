@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_02_001618) do
+ActiveRecord::Schema.define(version: 2019_10_02_011028) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 2019_10_02_001618) do
     t.datetime "last_synced_at"
     t.datetime "last_sync_error_at"
     t.text "last_sync_error"
+    t.boolean "exclude_from_available", default: false
     t.index ["account_id"], name: "index_accounts_on_account_id"
     t.index ["connection_id"], name: "index_accounts_on_connection_id"
   end
