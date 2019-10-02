@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_06_010752) do
+ActiveRecord::Schema.define(version: 2019_10_02_001618) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,6 +30,9 @@ ActiveRecord::Schema.define(version: 2019_08_06_010752) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "hidden_from_snapshot", default: false
+    t.datetime "last_synced_at"
+    t.datetime "last_sync_error_at"
+    t.text "last_sync_error"
     t.index ["account_id"], name: "index_accounts_on_account_id"
     t.index ["connection_id"], name: "index_accounts_on_connection_id"
   end
