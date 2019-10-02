@@ -16,6 +16,16 @@ class ConnectionsController < ApplicationController
     @public_token = plaid.item.public_token.create(@connection.access_token).public_token
   end
 
+  def update
+    @connection = Connection.find(params[:id])
+ 
+    if @connection.update(connection_params)
+      redirect_to @connection
+    else
+      render 'edit'
+    end
+  end
+
   def new
   end
 

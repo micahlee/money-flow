@@ -28,4 +28,12 @@ class Account < ApplicationRecord
     balance_current
   end
 
+  def sync_status
+    sync_ok? ? "OK" : "Failed: #{last_sync_error}"
+  end
+
+  def sync_ok?
+    (last_synced_at || DateTime.new(0)) > (last_sync_error_at || DateTime.new(0))
+  end
+
 end

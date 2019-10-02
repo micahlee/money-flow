@@ -14,6 +14,7 @@
       <th>Name</th>
       <th>Balance</th>
       <th>Type</th>
+      <th>Sync Status</th>
     </tr>
   </thead>
   <tbody>
@@ -29,6 +30,9 @@
         <td>
           <%=account.account_type%><br />
           <i><%=account.account_subtype%></i>
+        </td>
+        <td>
+          <%=account.sync_status%>
         </td>
       </tr>
     <% end %>
