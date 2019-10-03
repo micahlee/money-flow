@@ -4,6 +4,7 @@ services:
     image: postgres
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
+
   web:
     build: .
     volumes:
@@ -17,5 +18,15 @@ services:
       PLAID_ENV: 'development'
       PLAID_PRODUCTS: 'transactions'
       PLAID_COUNTRY_CODES: 'US,CA,GB,FR,ES'
+    depends_on:
+      - db
+
+  notebook:
+    build:
+      context: notebook/
+    ports:
+      - 8888:8888
+    volumes:
+      - ./notebook/work:/home/jovyan/work
     depends_on:
       - db
