@@ -1,7 +1,7 @@
-<h1>New Fund</h1>
+<h1>Edit Fund</h1>
 
 
-<%= form_with scope: :fund, url: funds_path, local: true do |form| %>
+<%= form_with(model: @fund, local: true) do |form| %>
   <p>
     <%= form.label :name %><br>
     <%= form.text_field :name %>
