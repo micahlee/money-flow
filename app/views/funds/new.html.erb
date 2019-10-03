@@ -11,6 +11,11 @@
     <%= form.label :account %><br>
     <%= form.select :account_id, Account.all.collect { |a| [ "#{a.connection.name} - #{a.name}", a.id ] }.sort_by {|i| i[0] }, include_blank: true %>
   </p>
+
+  <div class="form-check">
+      <%= form.check_box :auto_clear, class: 'form-check-input' %>
+      <%= form.label 'Automatically clear assigned transactions?', class: 'form-check-label' %>
+  </div>
  
   <p>
     <%= form.submit %>

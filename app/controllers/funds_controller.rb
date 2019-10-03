@@ -46,7 +46,7 @@ class FundsController < ApplicationController
   private
 
   def fund_params
-    params.require(:fund).permit(:name, :account_id)
+    params.require(:fund).permit(:name, :account_id, :auto_clear)
   end 
 
   def to_csv(transactions)

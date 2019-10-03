@@ -6,9 +6,9 @@ class TransactionsController < ApplicationController
 
   def assign
     raise "No fund given" unless params[:fund_id].present?
-    raise "Invalid fund" unless Fund.find(params[:fund_id])
+    raise "Invalid fund" unless (fund = Fund.find(params[:fund_id]))
     @transaction = Transaction.find(params[:id])
-    @transaction.update(fund_id: params[:fund_id])
+    @transaction.update(fund_id: params[:fund_id], cleared: fund.auto_clear)
   end
 
   def split_form
