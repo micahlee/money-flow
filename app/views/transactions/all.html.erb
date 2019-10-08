@@ -1,0 +1,55 @@
+<h1>Last 100 Transactions</h1>
+
+<%= link_to 'Dashboard', root_path %>
+
+
+
+<table class="table">
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Date</th>
+<th>Ammount</th>
+</tr>
+</thead>
+<tbody>
+  <% @transactions.each do |t| %>
+    <tr>
+      <td>
+        <select onchange="assignTransaction(this, <%=t.account.connection.id%>, <%=t.account.id%>, <%=t.id%>)">
+          <option>Assign</option>
+          <% @funds.each do |fund| %>
+            <option value="<%=fund.id%>" <% if t.fund_id == fund.id %>selected<% end %>><%=fund.name%></option>
+          <% end %>
+        </select>
+      </td>
+      <td><%=t.name%></td>
+      <td><%=t.date%></td>
+      <td><%=number_to_currency(t.amount * -1)%></td>
+    </tr>
+  <% end %>
+</tbody>
+</table>
+
+<script>
+(function($) {
+  function assignTransaction(select, connectionId, accountId, transactionId) {
+    $(select).attr('disabled', true);
+    let fundId = $(select).val();
+    $.ajax({
+      url: '/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/assign?fund_id=' + fundId,
+      type: 'post',
+      data: {},
+      headers: {
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function(data) {
+        $(select).removeAttr('disabled');
+      }
+    });
+  }
+
+  window.assignTransaction = assignTransaction;
+})(jQuery);
+</script>

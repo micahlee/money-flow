@@ -1,4 +1,16 @@
 class TransactionsController < ApplicationController
+
+  def all
+    @transactions = Transaction.joins(:account)
+                               .where(accounts: { hidden_from_snapshot: false})
+                               .where(pending: false)
+                               .order('created_at desc')
+                               .limit(100)
+                               .all
+
+    @funds = Fund.order(:name).all
+  end
+
   def clear
     @transaction = Transaction.find(params[:id])
     @transaction.update!(cleared: true)
