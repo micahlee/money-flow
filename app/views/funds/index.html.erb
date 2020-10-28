@@ -3,10 +3,31 @@
 <%= link_to "New Fund", new_fund_path %> |
 <%= link_to 'Dashboard', root_path %>
 
-<ul>
-  <% @funds.each do |fund| %>
-    <li>
-      <%=link_to fund.name, fund_path(fund) %> ( <%=number_to_currency(fund.pending_amount)%> pending)
-    </li>
+<canvas id="funds-by-month"></canvas>
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Fund</th>
+      <th>Total</th>
+      <th>Average</th>
+      <th>Pending</th>
+    </tr>
+  </thead>
+  <tbody>
+   <% @funds.sort_by { |f| f.average }.reverse.each do |fund| %>
+    <tr>
+      <td><%=link_to fund.name, fund_path(fund) %></td>
+      <td><%=number_to_currency(fund.total_this_month)%></td>
+            <td><%=number_to_currency(fund.average)%></td>
+
+      <td><%=number_to_currency(fund.pending_amount)%></td>
+    </tr>
   <% end %>
-</ul>
+  </tbody>
+</table>
+
+<script>
+var funds_by_month_data = <%=@funds_by_month.to_json.html_safe%>;
+</script>

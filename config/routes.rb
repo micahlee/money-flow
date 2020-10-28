@@ -27,5 +27,9 @@ Rails.application.routes.draw do
   get '/dashboard', to: 'dashboard#index'
   get '/transactions', to: 'transactions#all'
 
+  get '/review', to: 'transactions#review'
+  
+  get '/credit_cards', to: 'credit_cards#index'
+
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

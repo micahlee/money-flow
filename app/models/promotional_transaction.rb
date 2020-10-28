@@ -1,0 +1,2 @@
+class PromotionalTransaction < ApplicationRecord
+end

@@ -1,12 +1,12 @@
 <h1>Finance Outlook</h1>
 
 <%= link_to 'Sync All', sync_all_connections_path,
-              method: :post,
-              data: { confirm: 'Are you sure?' } %> |
+              method: :post %> |
 <%= link_to 'Bank Connections', connections_path %> |
 <%= link_to 'Funds', funds_path %> |
 <%= link_to "All Transactions", transactions_path %> | 
-<%= link_to "Money Mover", money_mover_path(cycle: 1) %>
+<%= link_to "Money Mover", money_mover_path(cycle: 1) %> | 
+<%= link_to "Credit Cards", credit_cards_path %>
 
 <h2>Transaction Inbox</h2>
 <%= link_to "Download", dashboard_path(format: 'csv') %>
@@ -40,6 +40,13 @@
           <% end %>
         </select>
         <br />
+        <% t.suggested_funds.each_with_index do |sf, idx| %>
+          <% if idx > 0 %>
+            | 
+          <% end %>
+          <button type="button" onclick="assignTransactionFund(this, <%=sf[:fund]&.id%>, <%=t.account.connection.id%>, <%=t.account.id%>, <%=t.id%>)" class="btn btn-link"><%=sf[:fund]&.name%></button>
+        
+        <% end %>
         <%= link_to 'Split', split_connection_account_transaction_path(t.account.connection, t.account, t), class: 'btn btn-link'%>
       </td>
       <td><%=t.date%></td>
@@ -47,9 +54,15 @@
       <td>
         <%=t.account.name%><br />
         <%=t.account.connection.name%>
-        </td>
-            <td><%=t.name%></td>
-<td>
+      </td>
+      <td>
+        <span title="<%=t.id%>">
+          <%=t.name%>
+        </span>
+        <br />
+        <textarea class="note" placeholder="Enter assignment notes here..."></textarea>
+      </td>
+      <td>
         <%=number_to_currency(t.amount * -1)%><br/>
         <%= 'pending' if t.pending %>
       </td>
@@ -58,6 +71,12 @@
   <% end %>
 </tbody>
 </table>
+
+<h2>Money Flow</h2>
+<canvas id="flow-by-month"></canvas>
+
+<h2>Totals</h2>
+<canvas id="totals-by-month"></canvas>
 
 <h2>Account Snapshot</h2>
 <table class="table">
@@ -104,6 +123,10 @@
 
 
 <script>
+
+var flow_by_month_data = <%=@flow_by_month.to_json.html_safe%>;
+var totals_by_month_data = <%=@totals_by_month.to_json.html_safe%>;
+
 (function($) {
   function clearTransaction(button, connectionId, accountId, transactionId) {
     $(button).attr('disabled', true);
@@ -123,12 +146,17 @@
   function assignTransaction(select, connectionId, accountId, transactionId) {
     $(select).attr('disabled', true);
     let fundId = $(select).val();
+
+    let note = $(select).parent().parent().find('textarea.note').val()
+
     $.ajax({
       url: '/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/assign?fund_id=' + fundId,
       type: 'post',
-      data: {},
+      data: {
+        note: note
+      },
       headers: {
-        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
       },
       success: function(data) {
         $(select).closest('tr').hide('fast');
@@ -136,7 +164,28 @@
     });
   }
 
+  function assignTransactionFund(button, fundId, connectionId, accountId, transactionId) {
+    $(button).attr('disabled', true);
+
+    let note = $(button).parent().parent().find('textarea.note').val()
+
+    $.ajax({
+      url: '/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/assign?fund_id=' + fundId,
+      type: 'post',
+      data: {
+        note: note
+      },
+      headers: {
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function(data) {
+        $(button).closest('tr').hide('fast');
+      }
+    });
+  }
+
   window.clearTransaction = clearTransaction;
   window.assignTransaction = assignTransaction;
+  window.assignTransactionFund = assignTransactionFund;
 })(jQuery);
 </script>
