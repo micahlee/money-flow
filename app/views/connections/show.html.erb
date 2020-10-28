@@ -32,7 +32,7 @@
           <i><%=account.account_subtype%></i>
         </td>
         <td>
-          <%=account.sync_status%>
+          <%=account.archived? ? 'Archived' : account.sync_status%>
         </td>
       </tr>
     <% end %>

@@ -8,6 +8,8 @@ class Connection < ApplicationRecord
   end
 
   def connection_ok?
-    accounts.all? { |account| account.sync_ok? }
+    return true if archived?
+    
+    accounts.all? { |account| account.sync_ok? || account.archived? }
   end
 end

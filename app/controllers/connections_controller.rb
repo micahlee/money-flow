@@ -57,9 +57,13 @@ class ConnectionsController < ApplicationController
 
   def sync_all
     Connection.all.each do |conn|
+      next if conn.archived?
+
       ConnectionsController.do_sync_accounts(conn)
 
       conn.accounts.each do |acct|
+        next if acct.archived?
+
         AccountsController.do_sync_transactions(conn, acct)
       end
     end
@@ -96,6 +100,10 @@ class ConnectionsController < ApplicationController
   private
 
   def connection_params
-    params.require(:connection).permit(:name, :access_token, :item_id)
+    params.require(:connection).permit(
+      :name, 
+      :access_token, 
+      :archived,
+      :item_id)
   end
 end

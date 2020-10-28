@@ -8,6 +8,7 @@
 <thead>
 <tr>
 <th></th>
+<th>Account</th>
 <th>Name</th>
 <th>Date</th>
 <th>Ammount</th>
@@ -24,7 +25,12 @@
           <% end %>
         </select>
       </td>
-      <td><%=t.name%></td>
+      <td><%=t.account.connection.name%> - <%=t.account.name%></td>
+      <td>
+        <span title="<%=t.id%>"><%=t.name%></span>
+        <br />
+        <span style="color: gray"><%=t.note%></span>
+      </td>
       <td><%=t.date%></td>
       <td><%=number_to_currency(t.amount * -1)%></td>
     </tr>

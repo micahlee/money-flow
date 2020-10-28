@@ -1,6 +1,10 @@
+require 'color-generator'
+
 class FundsController < ApplicationController
   def index
     @funds = Fund.order(:name).all
+
+    @funds_by_month = funds_by_month
   end
 
   def new 
@@ -10,7 +14,6 @@ class FundsController < ApplicationController
     @fund = Fund.find(params['id'])
 
     @transactions = @fund.transactions.joins(:account)
-                        .where(accounts: { hidden_from_snapshot: false})
                         .where(pending: false)
                         .where(cleared: false)
                         .order(date: :desc)
@@ -59,5 +62,60 @@ class FundsController < ApplicationController
 
       csv << ["", "", "TOTAL", transactions.collect(&:amount).sum]
     end
+  end
+
+  def funds_by_month
+    results = funds_by_month_data
+
+    generator = ColorGenerator.new saturation: 0.3, lightness: 0.75
+    months = results.map { |r| r['txn_month']}.uniq
+    series = results.map { |r| r['name'] }.uniq
+
+    datasets = series.map do |name|
+      data = months.map do |month| 
+        result = results.find { |row| row['txn_month'] == month && row['name'] == name }
+        result.nil? ? 0 : result['total']
+      end
+
+      color = generator.create_hex
+
+      {
+        label: name,
+        borderColor: "##{color}",
+        data: data
+      }
+    end
+
+    return {
+      labels: months.map {|m| DateTime.parse(m).strftime('%b, %Y')},
+      datasets: datasets
+    }
+  end
+
+  def funds_by_month_data
+    query = <<-SQL
+    SELECT 
+        date_trunc('month', t.created_at) AS txn_month,
+        f.name, 
+        SUM(t.amount) as total
+    FROM 
+        transactions t
+        LEFT JOIN funds f on f.id = t.fund_id
+        LEFT JOIN accounts a on a.id = t.account_id
+
+    WHERE
+        t.pending = false
+        AND a.account_type not in ('investment', 'loan')
+        AND a.hidden_from_snapshot = false
+        
+    GROUP BY
+        txn_month,
+        f.name
+    ORDER BY
+        txn_month,
+        total desc;
+    SQL
+
+    ActiveRecord::Base.connection.select_all(query)
   end
 end

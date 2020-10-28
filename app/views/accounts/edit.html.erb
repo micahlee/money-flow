@@ -32,6 +32,18 @@
       <%= form.check_box :exclude_from_available, class: 'form-check-input' %>
       <%= form.label 'Exclude from Available Balance', class: 'form-check-label' %>
   </div>
+
+  <div class="form-check">
+      <%= form.check_box :archived, class: 'form-check-input' %>
+      <%= form.label 'Archive', class: 'form-check-label' %>
+  </div>
+
+  <% if @account.account_type == 'credit' %>
+  <div class="form-group">
+    <label>Payment URL</label>
+    <%= form.text_field :payment_link, class: 'form-control' %>
+  </div>
+  <% end %>
  
   <p>
     <%= form.submit class: 'btn btn-primary' %>

@@ -1,7 +1,9 @@
 version: '3'
 services:
   db:
-    image: postgres
+    build:
+      context: .
+      dockerfile: Dockerfile.db
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
 

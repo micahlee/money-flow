@@ -74,6 +74,10 @@ class AccountsController < ApplicationController
   protected
 
   def account_params
-    params.require(:account).permit(:hidden_from_snapshot, :exclude_from_available)
+    params.require(:account).permit(
+      :hidden_from_snapshot, 
+      :archived,
+      :exclude_from_available, 
+      :payment_link)
   end
 end

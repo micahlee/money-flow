@@ -10,10 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_03_002810) do
+ActiveRecord::Schema.define(version: 2020_08_26_002023) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "orafce"
   enable_extension "plpgsql"
+  enable_extension "tablefunc"
 
   create_table "accounts", force: :cascade do |t|
     t.bigint "connection_id"
@@ -34,6 +36,7 @@ ActiveRecord::Schema.define(version: 2019_10_03_002810) do
     t.datetime "last_sync_error_at"
     t.text "last_sync_error"
     t.boolean "exclude_from_available", default: false
+    t.string "payment_link"
     t.index ["account_id"], name: "index_accounts_on_account_id"
     t.index ["connection_id"], name: "index_accounts_on_connection_id"
   end
@@ -44,6 +47,7 @@ ActiveRecord::Schema.define(version: 2019_10_03_002810) do
     t.string "item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "archived"
   end
 
   create_table "funds", force: :cascade do |t|
@@ -53,6 +57,12 @@ ActiveRecord::Schema.define(version: 2019_10_03_002810) do
     t.datetime "updated_at", null: false
     t.boolean "auto_clear", default: false
     t.index ["account_id"], name: "index_funds_on_account_id"
+  end
+
+  create_table "promotional_transactions", force: :cascade do |t|
+    t.bigint "transaction_id"
+    t.date "due"
+    t.index ["transaction_id"], name: "index_promotional_transactions_on_transaction_id"
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -71,6 +81,7 @@ ActiveRecord::Schema.define(version: 2019_10_03_002810) do
     t.boolean "cleared", default: false
     t.bigint "fund_id"
     t.bigint "split_from_id"
+    t.text "note"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["fund_id"], name: "index_transactions_on_fund_id"
     t.index ["split_from_id"], name: "index_transactions_on_split_from_id"
@@ -78,6 +89,7 @@ ActiveRecord::Schema.define(version: 2019_10_03_002810) do
 
   add_foreign_key "accounts", "connections"
   add_foreign_key "funds", "accounts"
+  add_foreign_key "promotional_transactions", "transactions"
   add_foreign_key "transactions", "accounts"
   add_foreign_key "transactions", "funds"
   add_foreign_key "transactions", "transactions", column: "split_from_id"

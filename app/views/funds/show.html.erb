@@ -1,7 +1,9 @@
 <h1><%=@fund.name%></h1>
+<% if @fund.account %>
 <div>
   <%=@fund.account.connection.name%> - <%=@fund.account.name%>
 </div>
+<% end %>
 
 <div>
 <%= link_to 'Edit', edit_fund_path(@fund) %> |
@@ -52,10 +54,13 @@
     <td>TOTAL:</td>
     <td><%=number_to_currency(@transactions.collect(&:amount).sum)%></td>
   </tr>
+  <% if @fund.account %>
+
   <tr>
     <td colspan="3"></td>
     <td>Available:</td>
     <td><%=number_to_currency(@fund.account.balance_current)%></td>
   </tr>
+  <% end %>
 </tbody>
 </table>

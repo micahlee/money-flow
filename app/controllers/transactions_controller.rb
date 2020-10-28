@@ -11,6 +11,19 @@ class TransactionsController < ApplicationController
     @funds = Fund.order(:name).all
   end
 
+  def review
+    @transactions = Transaction.joins(:fund)
+      .where(created_at: Time.now.beginning_of_month..Time.now.end_of_month)
+      .where.not(funds: { name: 'Transfers'})
+      .where(pending: false)
+      .order('created_at desc')
+      .all
+
+    @income = @transactions.select { |t| t.amount < 0 }
+    @expenses = @transactions.select { |t| t.amount >= 0 }
+
+  end
+
   def clear
     @transaction = Transaction.find(params[:id])
     @transaction.update!(cleared: true)
@@ -20,7 +33,12 @@ class TransactionsController < ApplicationController
     raise "No fund given" unless params[:fund_id].present?
     raise "Invalid fund" unless (fund = Fund.find(params[:fund_id]))
     @transaction = Transaction.find(params[:id])
-    @transaction.update(fund_id: params[:fund_id], cleared: fund.auto_clear)
+
+    @transaction.update(
+      fund_id: params[:fund_id], 
+      note: params[:note],
+      cleared: fund.auto_clear
+    )
   end
 
   def split_form

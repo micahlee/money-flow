@@ -14,4 +14,10 @@
 //= require activestorage
 //= require turbolinks
 //= require jquery
-//= require_tree .
+//= require randomColor
+
+// PAGES
+//= require transactions
+//= require funds_index
+//= require dashboard_index
+//= require credit_cards
