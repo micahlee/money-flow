@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.db
+    environment: 
+      POSTGRES_PASSWORD: my-password
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
 
