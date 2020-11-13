@@ -64,3 +64,57 @@
   <% end %>
 </tbody>
 </table>
+
+<h2>All transactions</h2>
+
+<table class="table">
+<thead>
+<tr>
+<th></th>
+<th>Date</th>
+<th>Account</th>
+<th>Name</th>
+<th>Amount</th>
+</tr>
+</thead>
+<tbody>
+  <% @all_transactions.each do |t| %>
+    <tr>
+    <td>
+        <button 
+          type="button" 
+          class="btn btn-light" 
+          onclick="clearTransaction(this, <%=t.account.connection.id%>, <%=t.account.id%>, <%=t.id%>)">
+          Clear
+        </button>
+      </td>
+
+      <td><%=t.date%></td>
+      
+      <td>
+        <%=t.account.name%><br />
+        <%=t.account.connection.name%>
+        </td>
+            <td><%=t.name%></td>
+<td>
+        <%=number_to_currency(t.amount)%><br/>
+        <%= 'pending' if t.pending %>
+      </td>
+      
+    </tr>
+  <% end %>
+  <tr>
+    <td colspan="3"></td>
+    <td>TOTAL:</td>
+    <td><%=number_to_currency(@transactions.collect(&:amount).sum)%></td>
+  </tr>
+  <% if @fund.account %>
+
+  <tr>
+    <td colspan="3"></td>
+    <td>Available:</td>
+    <td><%=number_to_currency(@fund.account.balance_current)%></td>
+  </tr>
+  <% end %>
+</tbody>
+</table>

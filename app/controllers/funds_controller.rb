@@ -2,7 +2,8 @@ require 'color-generator'
 
 class FundsController < ApplicationController
   def index
-    @funds = Fund.order(:name).all
+    @funds = Fund.order(:name)
+                 .reject { |fund| ['Transfers', 'Income'].include? fund.name }
 
     @funds_by_month = funds_by_month
   end
@@ -18,6 +19,14 @@ class FundsController < ApplicationController
                         .where(cleared: false)
                         .order(date: :desc)
                         .all
+
+                        dt = DateTime.now
+    bom = dt.beginning_of_month
+    eom = dt.end_of_month
+
+    @all_transactions = @fund.transactions.joins(:account)
+                             .order(date: :desc)
+                             .all
 
     respond_to do |format|
       format.html
@@ -106,6 +115,7 @@ class FundsController < ApplicationController
     WHERE
         t.pending = false
         AND a.account_type not in ('investment', 'loan')
+        AND f.name not in ('Transfers', 'Income' )
         AND a.hidden_from_snapshot = false
         
     GROUP BY

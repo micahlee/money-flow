@@ -11,18 +11,73 @@
     <tr>
       <th>Fund</th>
       <th>Total</th>
-      <th>Average</th>
       <th>Pending</th>
+      <th>Expected Remaining</th>
+      <th>Last Month</th>
+      <th>3 Mo. Average</th>
+      <th>6 Mo. Average</th>
+      <th>12 Mo. Average</th>
     </tr>
+    <tr>
+    <th></th>
+    <th><%=number_to_currency(@funds.sum(&:total_this_month))%></th>
+    <th><%=number_to_currency(@funds.sum(&:pending_amount))%></th>
+    <th><%=number_to_currency(@funds.sum(&:expected_remaining))%></th>
+    <th><%=number_to_currency(@funds.sum(&:total_last_month))%></th>
+    <th><%=number_to_currency(@funds.sum { |fund| fund.average_n_months(3) })%></th>
+    <th><%=number_to_currency(@funds.sum { |fund| fund.average_n_months(6) })%></th>
+    <th><%=number_to_currency(@funds.sum { |fund| fund.average_n_months(12) })%></th>
+    </tr>
+    
   </thead>
   <tbody>
-   <% @funds.sort_by { |f| f.average }.reverse.each do |fund| %>
+   <% @funds.sort_by { |f| f.average_n_months(3) }.reverse.each do |fund| %>
     <tr>
       <td><%=link_to fund.name, fund_path(fund) %></td>
-      <td><%=number_to_currency(fund.total_this_month)%></td>
-            <td><%=number_to_currency(fund.average)%></td>
 
-      <td><%=number_to_currency(fund.pending_amount)%></td>
+      <td>
+        <%=number_to_currency(fund.total_this_month)%>
+      </td>
+      <td>
+        <%=number_to_currency(fund.pending_amount)%>
+      </td>
+      <td>
+        <%=number_to_currency(fund.expected_remaining)%>
+      </td>
+      <td>
+        <%=number_to_currency(fund.total_last_month)%>
+        <% if fund.total_last_month > fund.average_n_months(3) %>
+          <!-- Upward Arrow -->
+          <span style="text-weight: bold; color: red;">&#x21D7;</span>
+        <% else %>
+          <!-- Downward Arrow -->
+          <span style="text-weight: bold; color: green;">&#x21D8;</span>
+        <% end %>
+      </td>
+      <td>
+        <%=number_to_currency(fund.average_n_months(3))%>
+        <% if fund.average_n_months(3) > fund.average_n_months(6) %>
+          <!-- Upward Arrow -->
+          <span style="text-weight: bold; color: red;">&#x21D7;</span>
+        <% else %>
+          <!-- Downward Arrow -->
+          <span style="text-weight: bold; color: green;">&#x21D8;</span>
+        <% end %>
+      </td>
+      <td>
+        <%=number_to_currency(fund.average_n_months(6))%>
+        <% if fund.average_n_months(6) > fund.average_n_months(12) %>
+          <!-- Upward Arrow -->
+          <span style="text-weight: bold; color: red;">&#x21D7;</span>
+        <% else %>
+          <!-- Downward Arrow -->
+          <span style="text-weight: bold; color: green;">&#x21D8;</span>
+        <% end %>
+      </td>
+      <td>
+        <%=number_to_currency(fund.average_n_months(12))%>
+      </td>
+
     </tr>
   <% end %>
   </tbody>
