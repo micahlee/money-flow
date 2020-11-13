@@ -3,7 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.5.7'
 
-gem 'plaid'
+gem 'plaid', '~> 10'
 gem 'jquery-rails'
 gem 'bootstrap', '~> 4.3.1'
 gem 'chart-js-rails'
