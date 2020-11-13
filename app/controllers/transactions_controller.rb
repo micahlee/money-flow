@@ -4,7 +4,7 @@ class TransactionsController < ApplicationController
     @transactions = Transaction.joins(:account)
                                .where(accounts: { hidden_from_snapshot: false})
                                .where(pending: false)
-                               .order('created_at desc')
+                               .order('date desc')
                                .limit(100)
                                .all
 
@@ -13,10 +13,10 @@ class TransactionsController < ApplicationController
 
   def review
     @transactions = Transaction.joins(:fund)
-      .where(created_at: Time.now.beginning_of_month..Time.now.end_of_month)
+      .where(date: Time.now.beginning_of_month..Time.now.end_of_month)
       .where.not(funds: { name: 'Transfers'})
       .where(pending: false)
-      .order('created_at desc')
+      .order('date desc')
       .all
 
     @income = @transactions.select { |t| t.amount < 0 }

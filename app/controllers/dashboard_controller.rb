@@ -110,7 +110,7 @@ class DashboardController < ApplicationController
   def flow_by_month
     query = <<-SQL
     SELECT 
-          date_trunc('month', t.created_at) AS txn_month,
+          date_trunc('month', TO_DATE(t.date, 'YYYY-MM-DD')) AS txn_month,
         SUM(case when t.amount >= 0 then amount end) * -1 as expenses,
         SUM(case when t.amount < 0 then amount end) * -1 as income,
         SUM(t.amount) * -1 as balance
@@ -137,7 +137,7 @@ class DashboardController < ApplicationController
       WITH
       months as (
           SELECT DISTINCT
-              date_trunc('month', t.created_at) as month
+              date_trunc('month', TO_DATE(t.date, 'YYYY-MM-DD')) as month
           FROM 
               transactions t
       ),
@@ -151,7 +151,7 @@ class DashboardController < ApplicationController
           FROM 
               months m
               CROSS JOIN accounts a
-              LEFT JOIN transactions t on date_trunc('month', t.created_at) = m.month AND t.account_id = a.id
+              LEFT JOIN transactions t on date_trunc('month', TO_DATE(t.date, 'YYYY-MM-DD')) = m.month AND t.account_id = a.id
           WHERE
               t.pending = false OR t.pending is null
           group by

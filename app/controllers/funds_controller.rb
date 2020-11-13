@@ -95,7 +95,7 @@ class FundsController < ApplicationController
   def funds_by_month_data
     query = <<-SQL
     SELECT 
-        date_trunc('month', t.created_at) AS txn_month,
+        date_trunc('month', TO_DATE(t.date, 'YYYY-MM-DD')) AS txn_month,
         f.name, 
         SUM(t.amount) as total
     FROM 
