@@ -10,6 +10,7 @@ class Fund < ApplicationRecord
 
   def average
     a = transactions.where(pending: false)
+                    .where("date < ?", DateTime.now.beginning_of_month)
                     .group("EXTRACT(month from TO_DATE(date, 'YYYY-MM-DD'))")
                     .sum(:amount).values
     a.reduce(:+) / a.size.to_f
@@ -21,6 +22,7 @@ class Fund < ApplicationRecord
 
   def average_n_months(n)
     a = transactions.where("date >= ?", n.months.ago)
+                    .where("date < ?", DateTime.now.beginning_of_month)
                     .where(pending: false)  
                     .group("EXTRACT(month from TO_DATE(date, 'YYYY-MM-DD'))")
                     .sum(:amount)
