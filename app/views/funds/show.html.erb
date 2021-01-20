@@ -16,7 +16,14 @@
 <table class="table">
 <thead>
 <tr>
-<th></th>
+<th>
+  <button 
+    type="button" 
+    class="btn btn-light btn-clear btn-clear-all" 
+    >
+    Clear All
+  </button>
+</th>
 <th>Date</th>
 <th>Account</th>
 <th>Name</th>
@@ -29,8 +36,11 @@
     <td>
         <button 
           type="button" 
-          class="btn btn-light" 
-          onclick="clearTransaction(this, <%=t.account.connection.id%>, <%=t.account.id%>, <%=t.id%>)">
+          class="btn btn-light btn-clear btn-clear-transaction" 
+          data-connection-id="<%=t.account.connection.id%>"
+          data-account-id="<%=t.account.id%>"
+          data-transaction-id="<%=t.id%>"
+          >
           Clear
         </button>
       </td>
@@ -70,7 +80,6 @@
 <table class="table">
 <thead>
 <tr>
-<th></th>
 <th>Date</th>
 <th>Account</th>
 <th>Name</th>
@@ -80,15 +89,6 @@
 <tbody>
   <% @all_transactions.each do |t| %>
     <tr>
-    <td>
-        <button 
-          type="button" 
-          class="btn btn-light" 
-          onclick="clearTransaction(this, <%=t.account.connection.id%>, <%=t.account.id%>, <%=t.id%>)">
-          Clear
-        </button>
-      </td>
-
       <td><%=t.date%></td>
       
       <td>
@@ -118,3 +118,62 @@
   <% end %>
 </tbody>
 </table>
+
+<script>
+(function($) {
+  $(document).ready(function() {
+    $('.btn-clear-all').click(function(event) {
+      let button = $(event.target);
+      clearAllTransactions(button);
+    });
+
+    $('.btn-clear-transaction').click(function(event) {
+      let button = $(event.target);
+
+      let connectionId = button.attr('data-connection-id');
+      let accountId = button.attr('data-account-id');
+      let transactionId = button.attr('data-transaction-id');
+
+      clearTransaction(button, connectionId, accountId, transactionId);
+    });
+
+    function clearTransaction(button, connectionId, accountId, transactionId) {
+      $(button).attr('disabled', true);
+      $.ajax({
+        url: '/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/clear',
+        type: 'post',
+        data: {},
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(data) {
+          $(button).closest('tr').hide('fast');
+        }
+      });
+    }
+
+    function clearAllTransactions(button) {
+      $('.btn-clear').attr('disabled', true);
+
+      $.ajax({
+        url: '/funds/<%=@fund.id%>/clear_all_pending',
+        type: 'post',
+        data: {},
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(data) {
+          $('.btn-clear-transaction').closest('tr').hide('fast');
+          $('.btn-clear-all').removeAttr('disabled');
+        },
+        error: function(xhr, status, errorThrown) {
+          $('.btn-clear').removeAttr('disabled');
+          alert('Failed to clear transactions: ' + errorThrown);
+        }
+      });
+    }
+
+  });
+
+})(jQuery);
+</script>

@@ -27,6 +27,8 @@ class TransactionsController < ApplicationController
   def clear
     @transaction = Transaction.find(params[:id])
     @transaction.update!(cleared: true)
+
+    head :no_content
   end
 
   def assign
@@ -39,6 +41,8 @@ class TransactionsController < ApplicationController
       note: params[:note],
       cleared: fund.auto_clear
     )
+
+    head :no_content
   end
 
   def split_form

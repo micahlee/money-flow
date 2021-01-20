@@ -34,6 +34,21 @@ class FundsController < ApplicationController
     end                        
   end
 
+  def clear_all_pending
+    @fund = Fund.find(params['id'])
+    @uncleared_transactions = @fund.transactions.joins(:account)
+                              .where(pending: false)
+                              .where(cleared: false)
+                              .order(date: :desc)
+                              .all
+    
+    @uncleared_transactions.each do |t|
+      t.update!(cleared: true)
+    end
+
+    head :no_content
+  end
+
   def create
     @fund = Fund.new(fund_params)
  

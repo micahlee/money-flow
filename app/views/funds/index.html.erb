@@ -5,11 +5,11 @@
 
 <canvas id="funds-by-month"></canvas>
 
-
 <table class="table">
   <thead>
     <tr>
       <th>Fund</th>
+      <th></th>
       <th>Total</th>
       <th>Pending</th>
       <th>Expected Remaining</th>
@@ -19,6 +19,7 @@
       <th>12 Mo. Average</th>
     </tr>
     <tr>
+    <th></th>
     <th></th>
     <th><%=number_to_currency(@funds.sum(&:total_this_month))%></th>
     <th><%=number_to_currency(@funds.sum(&:pending_amount))%></th>
@@ -34,11 +35,19 @@
    <% @funds.sort_by { |f| f.average_n_months(3) }.reverse.each do |fund| %>
     <tr>
       <td><%=link_to fund.name, fund_path(fund) %></td>
-
+      <td>
+        <button 
+          type="button" 
+          class="btn btn-light btn-clear" 
+          data-fund-id="<%=fund.id%>"
+          >
+          Clear
+        </button>
+      </td>
       <td>
         <%=number_to_currency(fund.total_this_month)%>
       </td>
-      <td>
+      <td class="pending">
         <%=number_to_currency(fund.pending_amount)%>
       </td>
       <td>
@@ -85,4 +94,35 @@
 
 <script>
 var funds_by_month_data = <%=@funds_by_month.to_json.html_safe%>;
+
+(function($) {
+  $(document).ready(function() {
+    $('.btn-clear').click(function(event) {
+      let button = $(event.target);
+      let fundId = button.attr('data-fund-id');
+
+      clearFund(button, fundId);
+    });
+
+    function clearFund(button, fundId) {
+      $(button).attr('disabled', true);
+      $.ajax({
+        url: '/funds/' + fundId + '/clear_all_pending',
+        type: 'post',
+        data: {},
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(data) {
+          $(button).closest('tr').find('td.pending').text('$0.00');
+          $(button).removeAttr('disabled');
+        },
+        error: function(xhr, status, errorThrown) {
+          $(button).removeAttr('disabled');
+          alert('Failed to clear fund: ' + errorThrown);
+        }
+      });
+    }
+  });
+})(jQuery);
 </script>

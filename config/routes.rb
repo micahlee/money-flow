@@ -19,7 +19,9 @@ Rails.application.routes.draw do
     post 'sync_all', on: :collection
   end
 
-  resources :funds
+  resources :funds do
+    post 'clear_all_pending', on: :member
+  end
 
   get '/money-mover', to: 'money_mover#index'
 
