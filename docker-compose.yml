@@ -8,6 +8,7 @@ services:
       POSTGRES_PASSWORD: my-password
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
+    restart: unless-stopped
 
   web:
     build: .
@@ -24,6 +25,7 @@ services:
       PLAID_COUNTRY_CODES: 'US,CA,GB,FR,ES'
     depends_on:
       - db
+    restart: unless-stopped
 
   notebook:
     build:
