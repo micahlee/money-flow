@@ -1,11 +1,14 @@
 
 class MoneyMoverController < ApplicationController
+  before_action :load_and_authorize_family
 
   Flow = Struct.new(:from, :to)
   Transfer = Struct.new(:amount, :comment)
   Total = Struct.new(:from, :to, :amount)
 
   def index
+    authorize! :read, @family
+
     cycle = params[:cycle]
 
     accounts = money_mover_config['accounts']
@@ -30,6 +33,8 @@ class MoneyMoverController < ApplicationController
 
   def money_mover_config
     authorize! :read, Family.find(1)
-    @money_mover_config ||= YAML.load_file("#{Rails.root.to_s}/config/money_mover.yml")
+    @money_mover_config ||= YAML.load(
+      @family.money_mover_yaml
+    )
   end
 end

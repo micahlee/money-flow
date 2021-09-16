@@ -64,6 +64,10 @@ class FamiliesController < AdminController
 
     # Only allow a list of trusted parameters through.
     def family_params
-      params.require(:family).permit(:name, :classifier_data)
+      params.require(:family).permit(
+        :name, 
+        :classifier_data,
+        :money_mover_yaml
+      )
     end
 end

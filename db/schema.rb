@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_16_172002) do
+ActiveRecord::Schema.define(version: 2021_09_16_173523) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(version: 2021_09_16_172002) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "classifier_data"
+    t.text "money_mover_yaml"
   end
 
   create_table "families_users", id: false, force: :cascade do |t|
