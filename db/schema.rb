@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_26_002023) do
+ActiveRecord::Schema.define(version: 2021_05_04_151432) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "orafce"
@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 2020_08_26_002023) do
     t.string "account_type"
     t.string "account_subtype"
     t.string "mask"
-    t.boolean "archived"
+    t.boolean "archived", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "hidden_from_snapshot", default: false
@@ -47,7 +47,7 @@ ActiveRecord::Schema.define(version: 2020_08_26_002023) do
     t.string "item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "archived"
+    t.boolean "archived", default: true, null: false
   end
 
   create_table "funds", force: :cascade do |t|

@@ -20,7 +20,7 @@ class FundsController < ApplicationController
                         .order(date: :desc)
                         .all
 
-                        dt = DateTime.now
+    dt = DateTime.now
     bom = dt.beginning_of_month
     eom = dt.end_of_month
 
@@ -117,6 +117,7 @@ class FundsController < ApplicationController
   end
 
   def funds_by_month_data
+    start_date = (DateTime.now - 12.months).beginning_of_month
     query = <<-SQL
     SELECT 
         date_trunc('month', TO_DATE(t.date, 'YYYY-MM-DD')) AS txn_month,
@@ -132,7 +133,7 @@ class FundsController < ApplicationController
         AND a.account_type not in ('investment', 'loan')
         AND f.name not in ('Transfers', 'Income' )
         AND a.hidden_from_snapshot = false
-        
+        AND t.date >= '#{start_date}'
     GROUP BY
         txn_month,
         f.name
