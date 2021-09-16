@@ -1,8 +1,8 @@
 <h1>Edit Account</h1>
 
-<%= link_to 'Back', connection_path(@connection) %>
+<%= link_to 'Back', connection_path(@family, @connection) %>
 
-<%= form_with(model: @account, local: true, url: connection_account_url(@connection, @account)) do |form| %>
+<%= form_with(model: @account, local: true, url: connection_account_url(@family, @connection, @account)) do |form| %>
  
   <% if @account.errors.any? %>
     <div id="error_explanation">

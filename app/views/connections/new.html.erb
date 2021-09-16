@@ -1,3 +1,8 @@
+<% content_for :head do %>
+  <% # Force turbo links to reload the page so the Plaid JS librarys works correctly. %>
+  <meta name="turbolinks-visit-control" content="reload">
+<% end %>
+
 <h1>New Connection</h1>
 
 <%= form_with scope: :connection, url: connections_path, local: true do |form| %>
@@ -35,7 +40,7 @@
     // webhook: 'https://your-domain.tld/plaid-webhook',
     onSuccess: function(public_token) {
       $.ajax({
-        url: '/connections/access_token',
+        url: '<%=access_token_connections_path(@family)%>',
         type: 'post',
         data: {
           public_token: public_token

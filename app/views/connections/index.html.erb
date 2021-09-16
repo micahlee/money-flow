@@ -1,6 +1,6 @@
 <h1>Connection</h1>
 
-<%= link_to 'New Connection', new_connection_path, :"data-turbolinks" => false %> |
+<%= link_to 'New Connection', new_connection_path %> |
 <%= link_to 'Dashboard', root_path %>
 
 <table class="table">
@@ -20,12 +20,12 @@
             <span class="oi oi-warning text-danger" title="person" aria-hidden="true"></span>
           <% end %>
 
-      <a href="<%=connection_path(connection)%>">
+      <a href="<%=connection_path(@family, connection)%>">
         <%=connection.name%>
         </a>
       </td>
       <td>
-      <%= link_to 'Destroy', connection_path(connection),
+      <%= link_to 'Destroy', connection_path(@family, connection),
               method: :delete,
               data: { confirm: 'Are you sure?' } %>
       </td>

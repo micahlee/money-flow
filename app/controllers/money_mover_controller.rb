@@ -29,6 +29,7 @@ class MoneyMoverController < ApplicationController
   private
 
   def money_mover_config
+    authorize! :read, Family.find(1)
     @money_mover_config ||= YAML.load_file("#{Rails.root.to_s}/config/money_mover.yml")
   end
 end

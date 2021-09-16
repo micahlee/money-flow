@@ -2,11 +2,18 @@ require 'csv'
 require 'date'
 
 class DashboardController < ApplicationController
+  before_action :load_and_authorize_family
+
   def index
     @transactions = Transaction.joins(account: [ :connection ])
                                .where(accounts: { hidden_from_snapshot: false })
                                .where(accounts: { archived: false })
-                               .where(accounts: { connections: { archived: false } })
+                               .where(accounts: { 
+                                  connections: { 
+                                    archived: false, 
+                                    family_id: @family.id 
+                                    } 
+                                  })
                                .where(pending: false)
                                .where(cleared: false)
                                .where(fund_id: nil)
@@ -14,7 +21,10 @@ class DashboardController < ApplicationController
                                .all
 
     @accounts = Account.joins(:connection)  
-                       .where(connections: { archived: false })  
+                       .where(connections: {
+                          archived: false,
+                          family_id: @family.id
+                          })  
                        .where(hidden_from_snapshot: false)
                        .where(archived: false)
                        .order(balance_current: :desc)
@@ -133,6 +143,7 @@ class DashboardController < ApplicationController
         AND c.archived = false
         And t.fund_id not in (18)
         AND t.date >= '#{start_date}'
+        AND c.family_id = #{@family.id}
     GROUP BY
         txn_month
     ORDER BY
@@ -165,8 +176,10 @@ class DashboardController < ApplicationController
               months m
               CROSS JOIN accounts a
               LEFT JOIN transactions t on date_trunc('month', TO_DATE(t.date, 'YYYY-MM-DD')) = m.month AND t.account_id = a.id
+              LEFT JOIN connections c on c.id = a.connection_id
           WHERE
               (t.pending = false OR t.pending is null)
+              AND c.family_id = #{@family.id}
           group by
               m.month,
               a.account_type,
@@ -182,6 +195,7 @@ class DashboardController < ApplicationController
           WHERE
             a.archived = false
             AND c.archived = false
+            AND c.family_id = #{@family.id}
           GROUP BY
               a.account_type
               ,a.account_subtype
@@ -193,8 +207,10 @@ class DashboardController < ApplicationController
           FROM  
               accounts a
               LEFT JOIN transactions t ON t.account_id = a.id
+              LEFT JOIN connections c on c.id = a.connection_id
           WHERE
               t.pending = false or t.pending is null
+              AND c.family_id = #{@family.id}
           group by
               a.account_type,
               a.account_subtype

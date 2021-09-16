@@ -1,18 +1,20 @@
 require 'color-generator'
 
 class FundsController < ApplicationController
+  before_action :load_and_authorize_family
+
   def index
-    @funds = Fund.order(:name)
+    authorize! :read, @family
+
+    @funds = @family.funds.order(:name)
                  .reject { |fund| ['Transfers', 'Income'].include? fund.name }
 
     @funds_by_month = funds_by_month
   end
 
-  def new 
-  end
-
   def show
     @fund = Fund.find(params['id'])
+    authorize! :read, @fund
 
     @transactions = @fund.transactions.joins(:account)
                         .where(pending: false)
@@ -36,6 +38,8 @@ class FundsController < ApplicationController
 
   def clear_all_pending
     @fund = Fund.find(params['id'])
+    authorize! :read, @fund
+
     @uncleared_transactions = @fund.transactions.joins(:account)
                               .where(pending: false)
                               .where(cleared: false)
@@ -49,7 +53,13 @@ class FundsController < ApplicationController
     head :no_content
   end
 
+  def new 
+    authorize! :update, @family
+  end
+
   def create
+    authorize! :update, @family
+
     @fund = Fund.new(fund_params)
  
     @fund.save
@@ -58,10 +68,12 @@ class FundsController < ApplicationController
 
   def edit
     @fund = Fund.find(params[:id])
+    authorize! :update, @fund
   end
 
   def update
     @fund = Fund.find(params[:id])
+    authorize! :update, @fund
  
     if @fund.update(fund_params)
       redirect_to @fund
@@ -127,6 +139,7 @@ class FundsController < ApplicationController
         transactions t
         LEFT JOIN funds f on f.id = t.fund_id
         LEFT JOIN accounts a on a.id = t.account_id
+        LEFT JOIN connections c on c.id = a.connection_id
 
     WHERE
         t.pending = false
@@ -134,6 +147,8 @@ class FundsController < ApplicationController
         AND f.name not in ('Transfers', 'Income' )
         AND a.hidden_from_snapshot = false
         AND t.date >= '#{start_date}'
+        AND f.family_id = #{@family.id}
+        AND c.family_id = #{@family.id}
     GROUP BY
         txn_month,
         f.name

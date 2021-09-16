@@ -1,9 +1,7 @@
 version: '2'
 services:
   db:
-    build:
-      context: .
-      dockerfile: postgres:11
+    image: postgres:11
     environment: 
       POSTGRES_PASSWORD: my-password
     volumes:
@@ -23,6 +21,8 @@ services:
       PLAID_ENV: 'development'
       PLAID_PRODUCTS: 'transactions'
       PLAID_COUNTRY_CODES: 'US,CA,GB,FR,ES'
+      MAILGUN_USER:
+      MAILGUN_PASSWORD:
     depends_on:
       - db
     restart: unless-stopped

@@ -1,17 +1,22 @@
 class AccountsController < ApplicationController
+  before_action :load_and_authorize_family
+
   def show
     @connection = Connection.find(params[:connection_id])
     @account = @connection.accounts.find(params[:id])
+    authorize! :read, @account
   end
 
   def edit
     @connection = Connection.find(params[:connection_id])
     @account = @connection.accounts.find(params[:id])
+    authorize! :update, @account
   end
   
   def update
     @connection = Connection.find(params[:connection_id])
     @account = @connection.accounts.find(params[:id])
+    authorize! :update, @account
  
     if @account.update(account_params)
       redirect_to connection_account_path(@connection, @account)
@@ -23,6 +28,8 @@ class AccountsController < ApplicationController
   def sync_transactions
     @connection = Connection.find(params[:connection_id])
     @account = @connection.accounts.find(params[:id])
+    authorize! :sync, @account
+
     AccountsController.do_sync_transactions(@connection, @account)
   end
 

@@ -1,4 +1,9 @@
-<h1>Finance Outlook</h1>
+<% content_for :head do %>
+  <% # Force turbo links to reload the page so the Plaid JS librarys works correctly. %>
+  <meta name="turbolinks-visit-control" content="reload">
+<% end %>
+
+<h1><%=@family.name%> | Finance Outlook</h1>
 
 <%= link_to 'Sync All', sync_all_connections_path,
               method: :post %> |
@@ -47,7 +52,7 @@
           <button type="button" onclick="assignTransactionFund(this, <%=sf[:fund]&.id%>, <%=t.account.connection.id%>, <%=t.account.id%>, <%=t.id%>)" class="btn btn-link"><%=sf[:fund]&.name%></button>
         
         <% end %>
-        <%= link_to 'Split', split_connection_account_transaction_path(t.account.connection, t.account, t), class: 'btn btn-link'%>
+        <%= link_to 'Split', split_connection_account_transaction_path(@family, t.account.connection, t.account, t), class: 'btn btn-link'%>
       </td>
       <td><%=t.date%></td>
       
@@ -106,7 +111,7 @@
           <% unless a.sync_ok? %>
             <span class="oi oi-warning text-danger" title="person" aria-hidden="true"></span>
           <% end %>
-          <%=link_to a.name, connection_account_path(a.connection, a) %> <br/>
+          <%=link_to a.name, connection_account_path(@family, a.connection, a) %> <br/>
           <%=a.connection.name%><br/>
           <%=a.account_type%> - <%=a.account_subtype%>
         </td>
@@ -131,7 +136,7 @@ var totals_by_month_data = <%=@totals_by_month.to_json.html_safe%>;
   function clearTransaction(button, connectionId, accountId, transactionId) {
     $(button).attr('disabled', true);
     $.ajax({
-      url: '/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/clear',
+      url: '/families/<%=@family.id%>/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/clear',
       type: 'post',
       data: {},
       headers: {
@@ -150,7 +155,7 @@ var totals_by_month_data = <%=@totals_by_month.to_json.html_safe%>;
     let note = $(select).parent().parent().find('textarea.note').val()
 
     $.ajax({
-      url: '/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/assign?fund_id=' + fundId,
+      url: '/families/<%=@family.id%>/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/assign?fund_id=' + fundId,
       type: 'post',
       data: {
         note: note
@@ -170,7 +175,7 @@ var totals_by_month_data = <%=@totals_by_month.to_json.html_safe%>;
     let note = $(button).parent().parent().find('textarea.note').val()
 
     $.ajax({
-      url: '/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/assign?fund_id=' + fundId,
+      url: '/families/<%=@family.id%>/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/assign?fund_id=' + fundId,
       type: 'post',
       data: {
         note: note

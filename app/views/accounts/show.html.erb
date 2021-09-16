@@ -1,10 +1,10 @@
 <h1><%=@account.name%></h1>
 
-<%= link_to 'Sync Transactions', sync_transactions_connection_account_path(@connection, @account),
+<%= link_to 'Sync Transactions', sync_transactions_connection_account_path(@family, @connection, @account),
               method: :post,
               data: { confirm: 'Are you sure?' } %> |
 
-<%= link_to 'Edit', edit_connection_account_path(@connection, @account) %> |
+<%= link_to 'Edit', edit_connection_account_path(@family, @connection, @account) %> |
 <%= link_to 'Dashboard', root_path %>
 
 

@@ -1,0 +1,24 @@
+<h1>Money Flow</h1>
+
+<% if @families.count > 0 %>
+  <h2>Select a Family</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th colspan="1"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @families.each do |family| %>
+        <tr>
+          <td><%= family.name %></td>
+          <td><%= link_to 'Open Dashboard', dashboard_path(family) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <%= link_to 'New Family', new_family_path %>
+<% end %>

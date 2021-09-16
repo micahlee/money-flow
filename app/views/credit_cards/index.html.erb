@@ -14,7 +14,7 @@
     <% @credit_cards.each do |cc| %>
       <tr>
         <td>
-          <%= link_to "#{cc.connection.name} - #{cc.name}", connection_account_path(cc.connection, cc) %>
+          <%= link_to "#{cc.connection.name} - #{cc.name}", connection_account_path(@family, cc.connection, cc) %>
          </td>
         <td><%=number_to_currency(cc.credit_amount)%></td>
         <td><%= link_to "Pay Now", cc.payment_link, target: "_blank", class: "btn btn-large btn-primary" %></td>

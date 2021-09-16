@@ -1,4 +1,5 @@
 class Fund < ApplicationRecord
+  belongs_to :family
   belongs_to :account, optional: true
   has_many :transactions
 

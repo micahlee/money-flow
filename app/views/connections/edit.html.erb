@@ -1,4 +1,11 @@
+<% content_for :head do %>
+  <% # Force turbo links to reload the page so the Plaid JS librarys works correctly. %>
+  <meta name="turbolinks-visit-control" content="reload">
+<% end %>
+
 <h1>Edit Connection</h1>
+
+<%= link_to 'Connections', connections_path %>
 
 <%= form_with model: @connection, local: true do |form| %>
   <div class="form-group">
@@ -26,39 +33,43 @@
 <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 <script>
 (function($) {
-  var products = '<%= ENV["PLAID_PRODUCTS"] || "transactions" %>'.split(',');
-  if (products.includes('assets')) {
-    $('#assets').show();
-  }
-  var handler = Plaid.create({
-    apiVersion: 'v2',
-    clientName: 'Plaid Quickstart',
-    env: '<%= ENV["PLAID_ENV"] %>',
-    product: products,
-    key: '<%= ENV["PLAID_PUBLIC_KEY"] %>',
-    countryCodes: '<%= ENV["PLAID_COUNTRY_CODES"] || "US,CA,GB,FR,ES" %>'.split(','),
-    token: '<%=@public_token%>',
-    // webhook: 'https://your-domain.tld/plaid-webhook',
-    onSuccess: function(public_token) {
-      $.ajax({
-        url: '/connections/access_token',
-        type: 'post',
-        data: {
-          public_token: public_token
-        },
-        headers: {
-          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(data) {
-          $("#connection_access_token").val(data.access_token);
-          $("#connection_item_id").val(data.item_id);
-        }
-      });
-    },
+  $(document).ready(function (){
+    var products = '<%= ENV["PLAID_PRODUCTS"] || "transactions" %>'.split(',');
+
+    if (products.includes('assets')) {
+      $('#assets').show();
+    }
+
+    var handler = Plaid.create({
+      apiVersion: 'v2',
+      clientName: 'Plaid Quickstart',
+      env: '<%= ENV["PLAID_ENV"] %>',
+      product: products,
+      key: '<%= ENV["PLAID_PUBLIC_KEY"] %>',
+      countryCodes: '<%= ENV["PLAID_COUNTRY_CODES"] || "US,CA,GB,FR,ES" %>'.split(','),
+      token: '<%=@public_token%>',
+      onSuccess: function(public_token) {
+        $.ajax({
+          url: '<%=access_token_connections_path(@family)%>',
+          type: 'post',
+          data: {
+            public_token: public_token
+          },
+          headers: {
+            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+          },
+          success: function(data) {
+            $("#connection_access_token").val(data.access_token);
+            $("#connection_item_id").val(data.item_id);
+          }
+        });
+      },
+    });
+
+    $('#link-btn').on('click', function(e) {
+      handler.open();
+    });
   });
 
-  $('#link-btn').on('click', function(e) {
-    handler.open();
-  });
 })(jQuery);
 </script>

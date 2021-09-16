@@ -1,5 +1,6 @@
 class Connection < ApplicationRecord
   has_many :accounts
+  belongs_to :family
 
   def transactions(client)
     now = Date.today
