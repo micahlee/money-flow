@@ -1,3 +1,5 @@
+require "base64"
+
 class Transaction < ApplicationRecord
   belongs_to :account
   belongs_to :fund, optional: true
@@ -28,7 +30,11 @@ class Transaction < ApplicationRecord
   end
 
   def fund_classifier
-    @fund_classifier ||= Marshal.load(File.read("#{Rails.root.to_s}/config/fund_classifier.dat"))
+    @fund_classifier ||= Marshal.load(
+      Base64.decode64(
+        account.connection.family.classifier_data
+      )
+    )
   end
 
 end
