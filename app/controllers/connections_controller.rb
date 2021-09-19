@@ -108,6 +108,7 @@ class ConnectionsController < ApplicationController
   rescue => err
     p connection.name
     p err
+    p err.backtrace
   end
 
   private
