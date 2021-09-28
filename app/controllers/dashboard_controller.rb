@@ -2,16 +2,31 @@ require 'csv'
 require 'date'
 
 class DashboardController < ApplicationController
+  before_action :load_and_authorize_family
+
   def index
-    @transactions = Transaction.joins(:account)
-                               .where(accounts: { hidden_from_snapshot: false})
+    @transactions = Transaction.joins(account: [ :connection ])
+                               .where(accounts: { hidden_from_snapshot: false })
+                               .where(accounts: { archived: false })
+                               .where(accounts: { 
+                                  connections: { 
+                                    archived: false, 
+                                    family_id: @family.id 
+                                    } 
+                                  })
                                .where(pending: false)
                                .where(cleared: false)
                                .where(fund_id: nil)
                                .order(date: :desc)
                                .all
 
-    @accounts = Account.where(hidden_from_snapshot: false)
+    @accounts = Account.joins(:connection)  
+                       .where(connections: {
+                          archived: false,
+                          family_id: @family.id
+                          })  
+                       .where(hidden_from_snapshot: false)
+                       .where(archived: false)
                        .order(balance_current: :desc)
                        .all
 
@@ -108,6 +123,7 @@ class DashboardController < ApplicationController
 
 
   def flow_by_month
+    start_date = (DateTime.now - 12.months).beginning_of_month
     query = <<-SQL
     SELECT 
           date_trunc('month', TO_DATE(t.date, 'YYYY-MM-DD')) AS txn_month,
@@ -117,12 +133,17 @@ class DashboardController < ApplicationController
     FROM 
         transactions t
         LEFT JOIN accounts a on a.id = t.account_id
+        LEFT JOIN connections c on c.id = a.connection_id
 
     WHERE
         t.pending = false
         AND a.hidden_from_snapshot = false
         AND a.account_type not in ('investment', 'loan')
+        AND a.archived = false
+        AND c.archived = false
         And t.fund_id not in (18)
+        AND t.date >= '#{start_date}'
+        AND c.family_id = #{@family.id}
     GROUP BY
         txn_month
     ORDER BY
@@ -133,6 +154,7 @@ class DashboardController < ApplicationController
   end
 
   def totals_by_month
+    start_date = (DateTime.now - 12.months).beginning_of_month
     query = <<-SQL
       WITH
       months as (
@@ -140,6 +162,8 @@ class DashboardController < ApplicationController
               date_trunc('month', TO_DATE(t.date, 'YYYY-MM-DD')) as month
           FROM 
               transactions t
+          WHERE
+            t.date >= '#{start_date}'
       ),
 
       monthly_data as (
@@ -152,8 +176,10 @@ class DashboardController < ApplicationController
               months m
               CROSS JOIN accounts a
               LEFT JOIN transactions t on date_trunc('month', TO_DATE(t.date, 'YYYY-MM-DD')) = m.month AND t.account_id = a.id
+              LEFT JOIN connections c on c.id = a.connection_id
           WHERE
-              t.pending = false OR t.pending is null
+              (t.pending = false OR t.pending is null)
+              AND c.family_id = #{@family.id}
           group by
               m.month,
               a.account_type,
@@ -161,13 +187,18 @@ class DashboardController < ApplicationController
       ),
       current_data as (
           SELECT
-              CONCAT(account_type, ' - ', account_subtype) as type
-              ,SUM(balance_current) as current_balance
+              CONCAT(a.account_type, ' - ', a.account_subtype) as type
+              ,SUM(a.balance_current) as current_balance
           FROM
-              accounts
+              accounts a
+              LEFT JOIN connections c on c.id = a.connection_id
+          WHERE
+            a.archived = false
+            AND c.archived = false
+            AND c.family_id = #{@family.id}
           GROUP BY
-              account_type
-              ,account_subtype
+              a.account_type
+              ,a.account_subtype
       ),
       totals as (
           SELECT
@@ -176,8 +207,10 @@ class DashboardController < ApplicationController
           FROM  
               accounts a
               LEFT JOIN transactions t ON t.account_id = a.id
+              LEFT JOIN connections c on c.id = a.connection_id
           WHERE
               t.pending = false or t.pending is null
+              AND c.family_id = #{@family.id}
           group by
               a.account_type,
               a.account_subtype

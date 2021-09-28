@@ -1,4 +1,4 @@
-FROM ruby:2.5.7
+FROM ruby:2
 
 RUN apt-get update -y && \
     apt-get install -y curl software-properties-common

@@ -1,19 +1,27 @@
 class TransactionsController < ApplicationController
+  before_action :load_and_authorize_family
 
   def all
-    @transactions = Transaction.joins(:account)
-                               .where(accounts: { hidden_from_snapshot: false})
-                               .where(pending: false)
-                               .order('date desc')
-                               .limit(100)
-                               .all
+    authorize! :read, @family
 
-    @funds = Fund.order(:name).all
+    @transactions = Transaction
+      .joins(account: [ :connection ])
+      .where(accounts: { hidden_from_snapshot: false})
+      .where(accounts: { connections: { family_id: @family.id } })
+      .where(pending: false)
+      .order('date desc')
+      .limit(100)
+      .all
+
+    @funds = @family.funds.order(:name).all
   end
 
   def review
-    @transactions = Transaction.joins(:fund)
+    authorize! :read, @family
+
+    @transactions = Transaction.joins(:fund, account: [ :connection ])
       .where(date: Time.now.beginning_of_month..Time.now.end_of_month)
+      .where(accounts: { connections: { family_id: @family.id } })
       .where.not(funds: { name: 'Transfers'})
       .where(pending: false)
       .order('date desc')
@@ -26,6 +34,8 @@ class TransactionsController < ApplicationController
 
   def clear
     @transaction = Transaction.find(params[:id])
+    authorize! :update, @transaction
+
     @transaction.update!(cleared: true)
 
     head :no_content
@@ -33,13 +43,17 @@ class TransactionsController < ApplicationController
 
   def assign
     raise "No fund given" unless params[:fund_id].present?
-    raise "Invalid fund" unless (fund = Fund.find(params[:fund_id]))
+
+    @fund = Fund.find(params[:fund_id])
+    authorize! :read, @fund
+    
     @transaction = Transaction.find(params[:id])
+    authorize! :update, @transaction
 
     @transaction.update(
       fund_id: params[:fund_id], 
       note: params[:note],
-      cleared: fund.auto_clear
+      cleared: @fund.auto_clear
     )
 
     head :no_content
@@ -47,6 +61,7 @@ class TransactionsController < ApplicationController
 
   def split_form
     @transaction = Transaction.find(params[:id])
+    authorize! :update, @transaction
 
     @split = OpenStruct.new(transactions: [])
     @split.transactions << OpenStruct.new(amount: @transaction.amount)
@@ -54,6 +69,8 @@ class TransactionsController < ApplicationController
 
   def split
     @orig_transaction = Transaction.find(params[:id])
+    authorize! :update, @transaction
+
     split = params[:split]
 
     split[:transactions].values.each do |t|

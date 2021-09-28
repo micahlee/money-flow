@@ -1,22 +1,28 @@
 require 'plaid'
 
 class ConnectionsController < ApplicationController
+  before_action :load_and_authorize_family
+
   def index
-    @connections = Connection.all
+    @connections = @family.connections
   end
   
   def show
     @connection = Connection.find(params[:id])
-
+    authorize! :read, @connection
     # @transactions = @connection.transactions(plaid)
   end
 
   def edit
     @connection = Connection.find(params[:id])
+    authorize! :update, @connection
+
     @public_token = plaid.item.public_token.create(@connection.access_token).public_token
   end
 
   def update
+    authorize! :update, @connection
+
     @connection = Connection.find(params[:id])
  
     if @connection.update(connection_params)
@@ -27,9 +33,11 @@ class ConnectionsController < ApplicationController
   end
 
   def new
+    authorize! :update, @family
   end
 
   def create
+    authorize! :update, @family
     @connection = Connection.new(connection_params)
  
     @connection.save
@@ -38,6 +46,8 @@ class ConnectionsController < ApplicationController
 
   def destroy
     @connection = Connection.find(params[:id])
+    authorize! :delete, @connection
+
     @connection.destroy
   
     redirect_to connections_path
@@ -49,13 +59,16 @@ class ConnectionsController < ApplicationController
     render json: exchange_token_response
   end
 
-  def sync_accounts
+  def sync_accounts  
     @connection = Connection.find(params[:id])
-    ConnectionsController.do_sync_accounts(@connection)
-    
+    authorize! :sync, @connection
+
+    ConnectionsController.do_sync_accounts(@connection)  
   end
 
   def sync_all
+    authorize! :sync, @family
+
     Connection.all.each do |conn|
       next if conn.archived?
 
@@ -95,6 +108,7 @@ class ConnectionsController < ApplicationController
   rescue => err
     p connection.name
     p err
+    p err.backtrace
   end
 
   private

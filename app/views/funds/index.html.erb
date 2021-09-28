@@ -1,3 +1,8 @@
+<% content_for :head do %>
+  <% # Force turbo links to reload the page so the Plaid JS librarys works correctly. %>
+  <meta name="turbolinks-visit-control" content="reload">
+<% end %>
+
 <h1>Funds</h1>
 
 <%= link_to "New Fund", new_fund_path %> |
@@ -34,7 +39,7 @@
   <tbody>
    <% @funds.sort_by { |f| f.average_n_months(3) }.reverse.each do |fund| %>
     <tr>
-      <td><%=link_to fund.name, fund_path(fund) %></td>
+      <td><%=link_to fund.name, fund_path(@family, fund) %></td>
       <td>
         <button 
           type="button" 
@@ -107,7 +112,7 @@ var funds_by_month_data = <%=@funds_by_month.to_json.html_safe%>;
     function clearFund(button, fundId) {
       $(button).attr('disabled', true);
       $.ajax({
-        url: '/funds/' + fundId + '/clear_all_pending',
+        url: '/families/<%=@family.id%>/funds/' + fundId + '/clear_all_pending',
         type: 'post',
         data: {},
         headers: {
