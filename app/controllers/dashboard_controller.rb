@@ -6,7 +6,6 @@ class DashboardController < ApplicationController
 
   def index
     @transactions = Transaction.joins(account: [ :connection ])
-                               .where(accounts: { hidden_from_snapshot: false })
                                .where(accounts: { archived: false })
                                .where(accounts: { 
                                   connections: { 
