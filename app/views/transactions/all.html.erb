@@ -56,7 +56,7 @@ Showing page <%=@page%> of <%=@page_count%> ( <%=@transaction_count%> total tran
     $(select).attr('disabled', true);
     let fundId = $(select).val();
     $.ajax({
-      url: '/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/assign?fund_id=' + fundId,
+      url: '/families/<%=@family.id%>/connections/' + connectionId + '/accounts/' + accountId + '/transactions/' + transactionId + '/assign?fund_id=' + fundId,
       type: 'post',
       data: {},
       headers: {
