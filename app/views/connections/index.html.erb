@@ -3,8 +3,10 @@
 <%= link_to 'New Connection', new_connection_path %> |
 <%= link_to 'Dashboard', root_path %>
 
-<table class="table">
+<% @tables.each do |tbl| %>
 
+<h3><%=tbl[:title]%></h3>
+<table class="table">
 <thead>
   <tr>
     <th>Name</th>
@@ -13,7 +15,7 @@
 </thead>
 
 <tbody>
-  <% @connections.each do |connection| %>
+  <% tbl[:connections].each do |connection| %>
     <tr>
       <td>
         <% unless connection.connection_ok? %>
@@ -34,3 +36,4 @@
 </tbody>
 
 </table>
+<% end%>

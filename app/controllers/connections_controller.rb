@@ -4,7 +4,16 @@ class ConnectionsController < ApplicationController
   before_action :load_and_authorize_family
 
   def index
-    @connections = @family.connections
+    @tables = [
+      {
+        title: 'Active Connections',
+        connections: @family.connections.where(archived: false)
+      },
+      {
+        title: 'Archived Connections',
+        connections: @family.connections.where(archived: true)
+      },
+    ]
   end
   
   def show
