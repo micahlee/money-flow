@@ -4,13 +4,27 @@ class TransactionsController < ApplicationController
   def all
     authorize! :read, @family
 
-    @transactions = Transaction
+    @page = params['page']&.to_i || 1
+    @per_page = params['per_page']&.to_i || 100
+
+    transactions_query = Transaction
       .joins(account: [ :connection ])
       .where(accounts: { hidden_from_snapshot: false})
       .where(accounts: { connections: { family_id: @family.id } })
       .where(pending: false)
       .order('date desc')
-      .limit(100)
+
+    @transaction_count = transactions_query.count()
+    @page_count = (@transaction_count / @per_page).ceil
+
+    @page = 1 if @page < 1
+    @page = @page_count if @page > @page_count
+
+    offset = (@page - 1) * @per_page
+
+    @transactions = transactions_query
+      .offset(offset)
+      .limit(@per_page)
       .all
 
     @funds = @family.funds.order(:name).all
