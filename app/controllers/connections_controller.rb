@@ -4,13 +4,33 @@ class ConnectionsController < ApplicationController
   before_action :load_and_authorize_family
 
   def index
-    @connections = @family.connections
+    @tables = [
+      {
+        title: 'Active Connections',
+        connections: @family.connections.where(archived: false)
+      },
+      {
+        title: 'Archived Connections',
+        connections: @family.connections.where(archived: true)
+      },
+    ]
   end
   
   def show
     @connection = Connection.find(params[:id])
     authorize! :read, @connection
     # @transactions = @connection.transactions(plaid)
+
+    @tables = [
+      {
+        title: 'Active Accounts',
+        accounts: @connection.accounts.where(archived: false)
+      },
+      {
+        title: 'Archived Accounts',
+        accounts: @connection.accounts.where(archived: true)
+      },
+    ]
   end
 
   def edit

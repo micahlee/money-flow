@@ -9,7 +9,8 @@
 
  (<%=@connection.item_id%>)
 
-<h2>Accounts</h2>
+<% @tables.each do |tbl| %>
+<h3><%=tbl[:title]%></h3>
 <table class="table">
   <thead>
     <tr>
@@ -20,7 +21,7 @@
     </tr>
   </thead>
   <tbody>
-    <% @connection.accounts.each do |account| %>
+    <% tbl[:accounts].each do |account| %>
       <tr>
         <td>
           <%= link_to account.name, connection_account_path(@family, @connection, account) %><br />
@@ -40,3 +41,4 @@
     <% end %>
   </tbody>
 </table>
+<% end %>
