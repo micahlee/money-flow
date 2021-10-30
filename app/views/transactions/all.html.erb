@@ -1,8 +1,20 @@
-<h1>Last 100 Transactions</h1>
+<h1>Transactions List</h1>
 
 <%= link_to 'Dashboard', root_path %>
 
+<div>
+Showing page <%=@page%> of <%=@page_count%> ( <%=@transaction_count%> total transactions, <%=@per_page%> transactions per page).
+</div>
 
+<div>
+<% if @page > 1 %>
+<%= link_to '← Prev Page', "?page=#{@page - 1}" %>
+<% end %>
+
+<% if @page < @page_count%>
+<%= link_to 'Next Page →', "?page=#{@page + 1}" %>
+<% end %>
+</div>
 
 <table class="table">
 <thead>
