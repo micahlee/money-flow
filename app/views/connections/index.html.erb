@@ -1,7 +1,7 @@
 <h1>Connection</h1>
 
 <%= link_to 'New Connection', new_connection_path %> |
-<%= link_to 'Dashboard', root_path %>
+<%= link_to 'Dashboard', dashboard_path(@family) %>
 
 <% @tables.each do |tbl| %>
 
