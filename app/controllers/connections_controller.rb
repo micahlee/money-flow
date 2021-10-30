@@ -41,12 +41,11 @@ class ConnectionsController < ApplicationController
   end
 
   def update
-    authorize! :update, @connection
-
     @connection = Connection.find(params[:id])
+    authorize! :update, @connection
  
     if @connection.update(connection_params)
-      redirect_to @connection
+      redirect_to connection_path(@family, @connection)
     else
       render 'edit'
     end
