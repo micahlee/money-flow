@@ -7,7 +7,7 @@
 
 <%= link_to 'Connections', connections_path %>
 
-<%= form_with model: @connection, local: true do |form| %>
+<%= form_with model: @connection, url: connection_url(@family, @connection), local: true do |form| %>
   <div class="form-group">
     <label>Name</label>
     <%= form.text_field :name, class: 'form-control' %>
