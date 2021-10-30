@@ -20,6 +20,17 @@ class ConnectionsController < ApplicationController
     @connection = Connection.find(params[:id])
     authorize! :read, @connection
     # @transactions = @connection.transactions(plaid)
+
+    @tables = [
+      {
+        title: 'Active Accounts',
+        accounts: @connection.accounts.where(archived: false)
+      },
+      {
+        title: 'Archived Accounts',
+        accounts: @connection.accounts.where(archived: true)
+      },
+    ]
   end
 
   def edit
