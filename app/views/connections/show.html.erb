@@ -5,7 +5,7 @@
               method: :post,
               data: { confirm: 'Are you sure?' } %> |
 <%= link_to 'Edit', edit_connection_path(@family, @connection) %> |
-<%= link_to 'Dashboard', root_path %>
+<%= link_to 'Dashboard', dashboard_path(@family) %>
 
  (<%=@connection.item_id%>)
 
