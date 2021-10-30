@@ -4,7 +4,8 @@ class CreditCardsController < ApplicationController
   def index
     @credit_cards = Account
                        .joins(:connection)
-                       .where(connections: { family_id: @family.id })
+                       .where(connections: { family_id: @family.id, archived: false })
+                       .where(archived: false)
                        .where(account_type: 'credit')
                        .order(balance_current: :desc)
                        .all
