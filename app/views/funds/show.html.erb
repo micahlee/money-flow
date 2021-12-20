@@ -6,13 +6,13 @@
 <% end %>
 
 <div>
-<%= link_to 'Edit', edit_fund_path(@fund) %> |
+<%= link_to 'Edit', edit_fund_path(@family, @fund) %> |
 <%= link_to 'Funds', funds_path %> | 
 <%= link_to 'Dashboard', dashboard_path(@family) %>
 </div>
 
 <h2>Transaction Inbox</h2>
-<%= link_to "Download", fund_path(@fund, format: 'csv') %>
+<%= link_to "Download", fund_path(@family, @fund, format: 'csv') %>
 <table class="table">
 <thead>
 <tr>

@@ -1,7 +1,7 @@
 <h1>Edit Fund</h1>
 
 
-<%= form_with(model: @fund, local: true) do |form| %>
+<%= form_with(model: @fund, local: true, url: fund_url(@family, @fund)) do |form| %>
   <p>
     <%= form.label :name %><br>
     <%= form.text_field :name %>
