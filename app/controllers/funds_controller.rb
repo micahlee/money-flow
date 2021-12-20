@@ -63,7 +63,7 @@ class FundsController < ApplicationController
     @fund = Fund.new(fund_params)
  
     @fund.save
-    redirect_to @fund
+    redirect_to fund_path(@family, @fund)
   end
 
   def edit
@@ -76,7 +76,7 @@ class FundsController < ApplicationController
     authorize! :update, @fund
  
     if @fund.update(fund_params)
-      redirect_to @fund
+      redirect_to fund_path(@family, @fund)
     else
       render 'edit'
     end
