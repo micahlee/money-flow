@@ -1,11 +1,13 @@
 version: '2'
 services:
   db:
-    image: postgres:11
+    image: postgres:13
     environment: 
       POSTGRES_PASSWORD: my-password
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
+      - ./prod_backup.sql:/docker-entrypoint-initdb.d/prod_backup.sql
+      - ./:/myapp
     restart: unless-stopped
 
   web:
@@ -23,6 +25,7 @@ services:
       PLAID_COUNTRY_CODES: 'US,CA,GB,FR,ES'
       MAILGUN_USER:
       MAILGUN_PASSWORD:
+      DATABASE_URL: postgres://postgres:my-password@db:5432/postgres 
     depends_on:
       - db
     restart: unless-stopped

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+docker run --rm \
+  -e "PGPASSWORD=$HEROKU_DB_PASSWORD" \
+  postgres:13 pg_dump \
+  -h "$HEROKU_DB_HOST" \
+  -U "$HEROKU_DB_USER" \
+  -d "$HEROKU_DB_DATABASE" \
+  --no-owner \
+  --no-acl \
+  > ./prod_backup.sql
