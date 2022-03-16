@@ -13,6 +13,10 @@
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <td colspan="2">Total</td>
+      <td><%=number_to_currency(@totals.map { |t| t.amount }.sum / 100)%></td>
+    </tr>
     <% @totals.each do |total| %>
     <tr>
       <td><%=total.from%></td>
